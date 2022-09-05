@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html style="height: 100%; background-color: rgb(30, 30, 30)">
+    <head>
+        <meta charset="utf-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+        <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="index.css">
+    </head>
+
+    <body style="display: flex; justify-content: center; align-items: center; height: 100%; margin: 0; padding: 0">
+        <div style="width: 100%; max-width: 1280px">
+            <div style="display: flex; justify-content: space-between">
+                <div>
+                    <input placeholder="Video name" id="video-name-input"></input>
+                    <button id="set-video-path">Set</button>
+                </div>
+                <p style="color: white" id="video-name-label"></p>
+            </div>
+            <div style="display: flex; justify-content: space-between">
+                <video style="width: 100%" id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" width="1280" height="720"></video>
+                <div id="client-list" style="width: 150px; margin: 0 0 0 30px; background-color: rgb(40, 40, 40); overflow: auto; max-height: 720px"></div>
+            </div>
+        </div>
+        <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
+        <script src="main.js?version=116"></script>
+    </body>
+</html>
