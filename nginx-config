@@ -2,8 +2,8 @@
 # like this: http://website.com/$ACCESS_KEY
 
 server {
-	listen 80 default_server;
-	server_name _;
+    listen 80 default_server;
+    server_name _;
     root /media/user/ST1000/Scripts/watch-together/www;
     index index.html;
 
