@@ -1,10 +1,15 @@
 let socket = null;
 let player = videojs("my-video", {
     controls: true,
+    liveui: true
 });
 
 if (localStorage.getItem('videojs-volume') != null)
     player.volume(localStorage.getItem('videojs-volume'))
+
+player.ready(() => {
+    player.one('play', () => {document.getElementById("quality").onchange()});
+});
 
 player.on("volumechange", function() {
     localStorage.setItem('videojs-volume', player.volume());
@@ -19,9 +24,17 @@ player.on("pause", function() {
         socket.send("pause;0");
 });
 
-// document.getElementsByClassName("vjs-big-play-button")[0].onclick = send_pause_or_play_to_others;
-// document.getElementsByClassName("vjs-play-control vjs-control vjs-button")[0].onclick = send_pause_or_play_to_others;
-// document.getElementById("my-video_html5_api").onclick = send_pause_or_play_to_others;
+document.getElementById("quality").onchange = function () {
+    value = document.getElementById("quality").value;
+    localStorage.setItem('videojs-quality', value);
+
+    if (value == "auto") {
+        player.dash.mediaPlayer.updateSettings({streaming: {abr: {autoSwitchBitrate: {video: true}}}});
+    } else {
+        player.dash.mediaPlayer.updateSettings({streaming: {abr: {autoSwitchBitrate: {video: false}}}});
+        player.dash.mediaPlayer.setQualityFor('video', value);
+    }
+};
 
 document.getElementsByClassName("vjs-progress-holder vjs-slider vjs-slider-horizontal")[0].onclick = function () {
     if (socket !== null && socket.readyState === socket.OPEN)
@@ -31,6 +44,11 @@ document.getElementsByClassName("vjs-progress-holder vjs-slider vjs-slider-horiz
 document.getElementsByClassName("vjs-progress-control vjs-control")[0].onclick = function () {
     if (socket !== null && socket.readyState === socket.OPEN)
         socket.send("set_time;" + Math.round(player.currentTime()))
+};
+
+document.getElementById("resync-time").onclick = function () {
+    if (socket !== null && socket.readyState === socket.OPEN)
+        socket.send("resync_time;0")
 };
 
 document.getElementById("my-video_html5_api").onkeypress = function (e)
@@ -86,7 +104,7 @@ function send_pause_or_play_to_others()
 
 function connect_to_websocket_server()
 {
-    let new_socket = new WebSocket("wss://" + location.hostname + "/websocket");
+    let new_socket = new WebSocket("ws://" + location.hostname + "/7787a1727d0f20e50e3f91f53aa1d2addae9e1fbe242c4262f32690f3220f14a/websocket");
 
     new_socket.onopen = function(e)
     {
@@ -116,8 +134,35 @@ function connect_to_websocket_server()
             case "set_source":
                 if (arg != "NOT_FOUND")
                 {
+                    document.getElementById("quality").textContent = "";
+
                     console.log("Setting source to", arg);
+
                     player.src(arg);
+
+                    quality_levels = split_data[2].split(" ");
+
+                    for (let i = 0; i < quality_levels.length + 1; i++) {
+                        option = document.createElement("option");
+                        if (i == quality_levels.length) {
+                            option.value = "auto";
+                            option.innerHTML = "auto";
+                        } else {
+                            option.value = i;
+                            option.innerHTML = quality_levels[i];
+                        }
+
+                        saved_quality = localStorage.getItem('videojs-quality');
+                        if (saved_quality != null && saved_quality == option.value)
+                            option.selected = true;
+
+                        document.getElementById("quality").appendChild(option);
+                    };
+
+                    player.ready(function() {
+                        //player.hlsQualitySelector({displayCurrentQuality: true,});
+                        document.getElementById("quality").onchange();
+                    });
                     video_name_label.innerHTML = arg;
                 }
                 else
@@ -133,6 +178,10 @@ function connect_to_websocket_server()
                 if (!(received_time - 3 <= current_time && current_time <= received_time + 3))
                     player.currentTime(arg);
 
+                break;
+
+            case "resync_time":
+                player.currentTime(arg);
                 break;
 
             case "delete_client_info":
