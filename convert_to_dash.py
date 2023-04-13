@@ -160,11 +160,11 @@ def main():
             print(f"Converting \"{video}\" to {resolution} resolution.")
             width, height = resolution.split("x")
             output_file = args.output_path + height + SUPPORTED_CODECS[args.codec]
-        
+
             if os.path.exists(output_file) and not args.replace_existing:
                 print(f"Skipping converting input file \"{video}\" because output file \"{output_file}\" already exists and --replace_existing is not specified.")
                 continue
-        
+
             if args.codec == "av1":
                 ret = convert_to_av1(video, output_file, width, height)
             elif args.codec == "x264":
@@ -175,11 +175,11 @@ def main():
                 exit(-1)
 
         cmd = f"packager --default_text_language ru --mpd_output manifest.mpd in=en.webm,stream=audio,output=en.webm,language=en in=ru.vtt,stream=text,output=ru.vtt,language=ru"
-        
+
         for file in os.listdir(args.output_path):
             if file.endswith(SUPPORTED_CODECS[args.codec]) and file[:file.rfind(".")].isdigit():
                 cmd += f" in={file},stream=video,output={file}"
-        
+
         proc = subprocess.run(cmd, shell=True)
 
         if proc.returncode != 0:
