@@ -12,7 +12,7 @@ import json
 CONNECTIONS = set()
 TOTAL_CLIENTS = 0
 
-WEB_PATH = "/var/www/html/"
+WEB_PATH = "/media/user/ST1000/Scripts/watch-together/www/"
 VIDEO_PATH = "videos"
 CURRENT_PATH = WEB_PATH + VIDEO_PATH
 CURRENT_VIDEO = ""
@@ -104,6 +104,7 @@ async def process_request(websocket, arg):
             dont_send = False
 
             if cmd == "set_source":
+                print(f"Trying to load \"{CURRENT_PATH}/{arg}\"")
                 if os.path.exists(f"{CURRENT_PATH}/{arg}"):
                     video_info = json.loads(subprocess.run(f"ffprobe -allowed_extensions ALL -v error -select_streams v -show_entries stream -of json {CURRENT_PATH}/{arg}", shell=True, capture_output=True).stdout.decode()[:-1])['streams']
 
