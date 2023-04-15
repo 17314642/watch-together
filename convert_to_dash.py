@@ -54,6 +54,8 @@ def show_ffmpeg_progress_bar(proc, video_duration):
                     print("Check \"convert.log\" for errors.")
     except Exception as e:
         print(e)
+        # FIXME: This is dangerous because it will kill processes not related to this script.
+        # Fix as soon as possible.
         subprocess.run("killall ffmpeg", shell=True)
         exit(-1)
 
