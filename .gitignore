@@ -1,1 +1,2 @@
 website/logs/*
+!website/logs/.gitkeep
