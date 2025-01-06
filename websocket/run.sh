@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-podman run --rm                                                     \
+podman run -d --rm                                                  \
     --name watch-together-websocket                                 \
     --pod=nginx_proxy                                               \
     -v ./:/app:ro                                                   \
